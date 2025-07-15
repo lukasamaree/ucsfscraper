@@ -1,3 +1,5 @@
+import subprocess
+subprocess.run(["playwright", "install"], check=True)
 import streamlit as st
 import asyncio
 import pandas as pd
