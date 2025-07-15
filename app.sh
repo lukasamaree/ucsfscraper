@@ -1,3 +1,3 @@
 #!/bin/bash
 playwright install
-streamlit run your_app_file.py
+streamlit run streamlit_phospho_scraper.py
