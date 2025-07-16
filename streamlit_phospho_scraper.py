@@ -46,10 +46,28 @@ if st.button("🚀 Start Scraping", type="primary"):
             
             # Find the generated CSV file
             csv_files = []
-            for root, dirs, files in os.walk("."):
-                for file in files:
-                    if file.endswith(".csv") and f"phosphorylation_site_" in file:
-                        csv_files.append(os.path.join(root, file))
+            try:
+                # Look for the final CSV file in protein folders (e.g., CDK2/Thr_CDK2.csv)
+                for root, dirs, files in os.walk("."):
+                    for file in files:
+                        if file.endswith(".csv") and not "phosphorylation_site_" in file and os.path.dirname(os.path.join(root, file)) != ".":
+                            csv_files.append(os.path.join(root, file))
+                
+                # Alternative search: look for any CSV file that's not in root directory
+                if not csv_files:
+                    for root, dirs, files in os.walk("."):
+                        for file in files:
+                            if file.endswith(".csv") and root != ".":
+                                csv_files.append(os.path.join(root, file))
+                
+                # Final fallback: look for any CSV file
+                if not csv_files:
+                    for root, dirs, files in os.walk("."):
+                        for file in files:
+                            if file.endswith(".csv"):
+                                csv_files.append(os.path.join(root, file))
+            except Exception as e:
+                st.error(f"Error searching for CSV files: {e}")
             
             if csv_files:
                 st.subheader("📊 Generated Files")
@@ -93,7 +111,8 @@ if st.button("🚀 Start Scraping", type="primary"):
                     except Exception as e:
                         st.error(f"Error reading {csv_file}: {str(e)}")
             else:
-                st.warning("No CSV files were generated. Check the console for errors.")
+                st.warning("No CSV files were found. This might be due to deployed environment restrictions.")
+                st.info("💡 Tip: Try running this locally if you need to access the CSV files directly.")
                 
         except ValueError:
             st.error("Invalid SITE_ID. Please enter a valid integer.")
